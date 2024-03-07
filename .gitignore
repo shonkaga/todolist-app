@@ -1,0 +1,9 @@
+# ignore these pushes 
+# commented out to delete files 
+
+# ignore venv 
+venv/ 
+.venv/
+
+# ignore pycache 
+**/__pycache__/
