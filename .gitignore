@@ -9,4 +9,4 @@ venv/
 **/__pycache__/
 
 # ignore the database since we generate it on init 
-#database.db
+database.db
