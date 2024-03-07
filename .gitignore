@@ -2,7 +2,8 @@
 # commented out to delete files 
 
 # ignore venv 
-#venv/ 
+venv/ 
+.venv/
 
 # ignore pycache 
-#**/__pycache__/
+**/__pycache__/
