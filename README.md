@@ -27,3 +27,25 @@
     ```shell
     deactivate
     ```
+    
+## Running on Mac:
+1. open terminal
+
+2. Install the python packages
+   ```shell
+   cd todolist-app
+   python -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+3. Run the python server
+   ```shell
+   python server.py
+   ```
+
+4. open http://127.0.0.1:5000
+
+5. ```shell
+   deactivate
+   ```
