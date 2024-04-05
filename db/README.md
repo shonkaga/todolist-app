@@ -2,19 +2,19 @@
 
 1. Include SQL
    
-   '''
-   import sqlite3
-   '''
+```
+import sqlite3
+```
 
 2. Connent to database and create a cursor
    
-   '''
-   connection = sqlite3.connect('./db/database.db')
-   with open('./db/schema.sql') as f:
-        connection.executescript(f.read())
+```
+connection = sqlite3.connect('./db/database.db')
+with open('./db/schema.sql') as f:
+      connection.executescript(f.read())
 
-   cur = connection.cursor()
-   '''
+cur = connection.cursor()
+```
 
 3. Use cursor to execute SQL INSERT command
     - Replace 'Task Name' with the name of the task you wish to add
@@ -22,30 +22,30 @@
     - Add date in the format 'year-month-day' or None
 
    ### Task  with a specific date:
-   '''
-   cur.execute("INSERT INTO tasks (name, status, due_date) VALUES (?, ?, ?)",
-            ('Task Name', 0, '2024-4-10')
-            )
-   '''
+```
+cur.execute("INSERT INTO tasks (name, status, due_date) VALUES (?, ?, ?)",
+         ('Task Name', 0, '2024-4-10')
+         )
+```
 
    ### Task without specific date:
-   '''
-   cur.execute("INSERT INTO tasks (name, status, due_date) VALUES (?, ?, ?)",
-            ('Task Name', 0, 'None')
-            )
-   '''
+```
+cur.execute("INSERT INTO tasks (name, status, due_date) VALUES (?, ?, ?)",
+         ('Task Name', 0, 'None')
+         )
+```
    
 5. Close the database when done
 
-   '''
-   connection.commit()
-   connection.close()
-   '''
+```
+connection.commit()
+connection.close()
+```
 
 
 # Blank Task Template for implementation
 
-'''
+```
 import sqlite3
 
 connection = sqlite3.connect('./db/database.db')
@@ -60,4 +60,4 @@ cur.execute("INSERT INTO tasks (name, status, due_date) VALUES (?, ?, ?)",
 
 connection.commit()
 connection.close()
-'''
+```
