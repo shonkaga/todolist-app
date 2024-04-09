@@ -27,10 +27,13 @@
 
                             <div class="edit-form-popup" id="theEditForm">
                                 <form method="post" class="fixed-edit-form">
-                                    <label for="task_edit">Task</label>
+                                    <label class="edit-form-label" for="task_edit">Task</label>
                                     <input type="text" id="task_edit" value="{{ task[1] }}" name="task_edit" class="edit-form-fields" required>
         
-                                    <label for="date_edit">Date</label>
+                                    <label class="edit-form-label" for="status_edit">Status</label>
+                                    <input type="text" id="status_edit" value="{{ task[2] }}" name="status_edit" class="edit-form-fields" required>
+
+                                    <label class="edit-form-label" for="date_edit">Date</label>
                                     <input type="text" id="date_edit" value="{{ task[3] }}" name="date_edit" class="edit-form-fields" required>
         
                                     <button class="btn" type="button" onclick="closeEditForm()">Cancel</button>
