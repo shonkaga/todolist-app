@@ -25,6 +25,8 @@ table, th, td {
     position: fixed;
     left: 0;
 }
+
+
 html {
     box-sizing: border-box;
   }
@@ -53,4 +55,17 @@ html {
 }
 .fixed-edit-form .edit-form-label {
     padding-top: 5px;
+}
+
+.delete-btn {
+	width: 75px;
+	hieght:35 px;
+	font-size: 15px; 
+	color: rgb(51,51,51);
+	background: rgb(247,202,201);
+	border: 3px solid #fff;
+	border-radius:5px;
+	outline:none;
+	margin-top: 1em;
+	margin-left: 16em;
 }
