@@ -22,3 +22,4 @@ def init_db():
 
     connection.commit()
     connection.close()
+

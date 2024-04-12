@@ -6,3 +6,4 @@ CREATE TABLE tasks (
     status INTEGER NOT NULL,
     date DATE
 );
+
