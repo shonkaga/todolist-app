@@ -1,15 +1,11 @@
 # ignore these pushes 
 # commented out to delete files 
 
-# ignore venv 
-venv/ 
-.venv/
-
 # ignore pycache 
 **/__pycache__/
 
 # ignore the database since we generate it on init 
-/db/database.db
+
 database.db
 
 #don't store mac file attribute
