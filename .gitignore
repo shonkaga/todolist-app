@@ -6,6 +6,7 @@ venv/
 .venv/
 
 # ignore pycache 
+**/__pycache__/
 
 # ignore the database since we generate it on init 
 /db/database.db
