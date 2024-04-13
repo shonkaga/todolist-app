@@ -61,7 +61,7 @@ def add_task(name, status, date=None):
 
 def get_tasks():
     db = get_db()
-    tasks = db.execute('SELECT * FROM tasks ORDER BY date IS NULL, date').fetchall()
+    tasks = db.execute('SELECT * FROM tasks WHERE status = 0 ORDER BY date IS NULL, date').fetchall()
     db.close()
     return tasks
 
@@ -82,6 +82,20 @@ def get_task(id):
     task = conn.execute('SELECT * FROM tasks WHERE id = ?', (id,)).fetchone()
     conn.close()
     return task
+
+def get_completed_tasks():
+    db = get_db()
+    # Fetch completed tasks and order them by date from most recent to oldest
+    tasks = db.execute('SELECT * FROM tasks WHERE status = 1 ORDER BY date DESC').fetchall()
+    db.close()
+    return tasks
+
+def update_task_details(task_id, name, date):
+    db = get_db()
+    db.execute('UPDATE tasks SET name = ?, date = ? WHERE id = ?', (name, date, task_id))
+    db.commit()
+    db.close()
+
 
 if __name__ == "__main__":
     main()

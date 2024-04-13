@@ -8,20 +8,77 @@
 <body data-bs-theme="dark">
     <div class="container">
         <h1>Tasks</h1>
-        <button class="btn btn-success" data-toggle="modal" data-target="#addTaskModal">Add Task</button>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add Task</button>
         <ul class="list-group mb-3">
-            {% for task in tasks %}
+            {% for task in active_tasks %}
             <li class="list-group-item">
-                {{ task.name }}
-                {% if task.date %}
-                <span class="ms-3 text-secondary fs-6"> {{  task.date   }} </span>
-                {% endif %}
-                <button class="btn btn-danger btn-sm float-end ms-2" data-toggle="modal" data-target="#deleteTaskModal-{{ task.id }}"><i class="bi bi-trash3-fill"></i></button>
-                <button class="btn btn-primary btn-sm float-end ms-2" data-toggle="modal" data-target="#editTaskModal-{{ task.id }}"><i class="bi bi-pencil-square"></i></button>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-1">
+                            <form method="POST" action="{{ url_for('complete_task', id=task.id) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> <!-- Include CSRF token -->
+                                <button type="submit" class="btn btn-outline-success btn-sm ms-2" onmouseover="changeIcon(this)" onmouseout="resetIcon(this)"> <i class="bi bi-circle"></i> </button>
+                            </form>
+                        </div>
+                        <div class="col">
+                            {{ task.name }}
+                            {% if task.date %}
+                            <span class="ms-3 text-secondary fs-6">{{ task.date }}</span>
+                            {% endif %}
+                            
+                            <button class="btn btn-danger btn-sm float-end ms-2" data-bs-toggle="modal" data-bs-target="#deleteTaskModal-{{ task.id }}"><i class="bi bi-trash3-fill"></i></button>
+                            <button class="btn btn-primary btn-sm float-end" data-bs-toggle="modal" data-bs-target="#editTaskModal-{{ task.id }}"><i class="bi bi-pencil-square"></i></button>
+                        </div>
+                    </div>
+                </div>
             </li>
             {% endfor %}
         </ul>
+
     </div>
+
+    
+<!-- Completed Tasks -->
+<div class="container">
+    <h2 class="fs-4">Completed Tasks</h2>
+    <ul class="list-group mb-3">
+        {% for task in completed_tasks %}
+        <li class="list-group-item">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        {{ task.name }}
+                        {% if task.date %}
+                        <span class="ms-3 text-secondary fs-6">{{ task.date }}</span>
+                        {% endif %}
+                        <button class="btn btn-danger btn-sm float-end" data-bs-toggle="modal" data-bs-target="#deleteCompletedTaskModal-{{ task.id }}"><i class="bi bi-trash3-fill"></i></button>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <!-- Delete Task Modal for Completed Tasks -->
+        <div class="modal fade" id="deleteCompletedTaskModal-{{ task.id }}" tabindex="-1" aria-labelledby="deleteCompletedTaskModalLabel-{{ task.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteCompletedTaskModalLabel-{{ task.id }}">Are you sure?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="{{ url_for('delete', id=task.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> <!-- Include CSRF token -->
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </ul>
+</div>
+
+  
 
     <!-- Add Task Modal -->
     <div class="modal" id="addTaskModal">
@@ -29,13 +86,13 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add Task</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form method="POST" action="{{ url_for('index') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> <!-- Include CSRF token -->
                         {{ form.hidden_tag() }}
                         {{ form.name.label }} {{ form.name(class='form-control') }}
-                        {{ form.status.label }} {{ form.status(class='form-control') }}
                         {{ form.date.label }} {{ form.date(class='form-control') }}
                         <button type="submit" class="btn btn-success">Add</button>
                     </form>
@@ -44,53 +101,69 @@
         </div>
     </div>
 
-    <!-- Edit Task Modal -->
-    {% for task in tasks %}
-    <div class="modal" id="editTaskModal-{{ task.id }}">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Task</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST" action="{{ url_for('edit', id=task.id) }}">
-                        {{ form.hidden_tag() }}
-                        {{ form.name.label }} {{ form.name(class='form-control', value=task.name) }}
-                        {{ form.status.label }} {{ form.status(class='form-control', value=task.status) }}
-                        {{ form.date.label }} {{ form.date(class='form-control', value=task.date) }}
-                        <button type="submit" class="btn btn-primary">Update</button>
-                    </form>
-                </div>
+<!-- Edit Task Modal -->
+{% for task in active_tasks %}
+<div class="modal fade" id="editTaskModal-{{ task.id }}" tabindex="-1" aria-labelledby="editTaskModalLabel-{{ task.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editTaskModalLabel-{{ task.id }}">Edit Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('edit', id=task.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> <!-- CSRF token for security -->
+                    <div class="mb-3">
+                        <label for="taskName-{{ task.id }}" class="form-label">Task Name</label>
+                        <input type="text" class="form-control" id="taskName-{{ task.id }}" name="name" value="{{ task.name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskDate-{{ task.id }}" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="taskDate-{{ task.id }}" name="date" value="{{ task.date}}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </form>
             </div>
         </div>
     </div>
-    {% endfor %}
+</div>
+{% endfor %}
 
-    <!-- Delete Task Modal -->
-    {% for task in tasks %}
-    <div class="modal" id="deleteTaskModal-{{ task.id }}">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Are you sure?</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <p>Do you really want to delete the task "{{ task.name }}"?</p>
-                    <form method="POST" action="{{ url_for('delete', id=task.id) }}">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    </form>
-                </div>
+<!-- Delete Task Modal -->
+{% for task in active_tasks %}
+<div class="modal" id="deleteTaskModal-{{ task.id }}" tabindex="-1" aria-labelledby="deleteTaskModalLabel-{{ task.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteTaskModalLabel-{{ task.id }}">Are you sure?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('delete', id=task.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> <!-- Include CSRF token -->
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </form>
             </div>
         </div>
     </div>
-    {% endfor %}
+</div>
+{% endfor %}
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+        function changeIcon(button) {
+            button.getElementsByTagName('i')[0].className = 'bi bi-check-circle';
+        }
+        function resetIcon(button) {
+            button.getElementsByTagName('i')[0].className = 'bi bi-circle';
+        }
+    </script>
+
 </body>
 </html>
