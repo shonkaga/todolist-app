@@ -6,13 +6,15 @@ venv/
 .venv/
 
 # ignore pycache 
-**/__pycache__/
 
 # ignore the database since we generate it on init 
 /db/database.db
-.\db\database.d
 database.db
 
+./db/__pycache__
 #don't store mac file attribute
 *DS_Store
+
+
+
 
