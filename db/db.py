@@ -1,26 +1,26 @@
 import sqlite3
 from datetime import date, timedelta
 import os
+from datetime import datetime, timedelta
+import calendar
 
 def init_db():
 
-    # Check if the database file already exists
+    # if db exists connect 
     db_exists = os.path.exists('./db/database.db')
-    # Connect to the database, ensuring the path is correct
     connection = sqlite3.connect('./db/database.db')
 
+    # else populate 
     if not db_exists:
-        # Create the tables according to schema.sql if database does not exist
         with open('./db/schema.sql', 'r') as f:
             connection.executescript(f.read())
         connection.commit()
-        # Populate the database if it was just created
         populate_db()
 
     connection.close()
 
 def populate_db():
-    # Connect to the database
+    
     connection = sqlite3.connect('./db/database.db')
     cur = connection.cursor()
 
@@ -44,7 +44,6 @@ def populate_db():
     connection.close()
 
 def main():
-    # Initialize and possibly populate the database
     init_db()
 
 
@@ -85,7 +84,6 @@ def get_task(id):
 
 def get_completed_tasks():
     db = get_db()
-    # Fetch completed tasks and order them by date from most recent to oldest
     tasks = db.execute('SELECT * FROM tasks WHERE status = 1 ORDER BY date DESC').fetchall()
     db.close()
     return tasks
@@ -95,6 +93,26 @@ def update_task_details(task_id, name, date):
     db.execute('UPDATE tasks SET name = ?, date = ? WHERE id = ?', (name, date, task_id))
     db.commit()
     db.close()
+
+def is_same_week(d1):
+    d2 = datetime.today().date()
+    return d1.isocalendar()[1] == d2.isocalendar()[1] and d1.year == d2.year    
+
+def update_task_dates(raw_tasks, active_tasks, days_dict):
+    for day in calendar.day_name:
+        days_dict[day] = []
+
+    for row in raw_tasks:
+        task = dict(row)
+        if task['date']:
+            task_date = datetime.strptime(task['date'], '%Y-%m-%d').date()
+            if is_same_week(task_date):
+                day_name = calendar.day_name[task_date.weekday()]
+                task['date'] = day_name  
+                days_dict[day_name].append(task)  
+            else:
+                task['date'] = task_date.strftime('%Y-%m-%d')
+        active_tasks.append(task)
 
 
 if __name__ == "__main__":
