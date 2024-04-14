@@ -1,6 +1,6 @@
 # Adding tasks to the database using python
 
-1. Include SQL
+1. Include SQL 
    
 ```
 import sqlite3
