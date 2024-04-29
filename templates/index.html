@@ -13,63 +13,88 @@
     <div class="">
     <div class="col">
         <div class="container mt-5">
-            <h2 class="mb-3">Calendar</h2>
-            <div class="container">
-                <table class="table table-bordered text-center">
-                    <thead>
-                        <tr>
-                            <th>Monday</th>
-                            <th>Tuesday</th>
-                            <th>Wednesday</th>
-                            <th>Thursday</th>
-                            <th>Friday</th>
-                            <th>Saturday</th>
-                            <th>Sunday</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                {% for task in days_dict['Monday'] %}
-                                    <div>{{ task.name }}</div>
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for task in days_dict['Tuesday'] %}
-                                    <div>{{ task.name }}</div>
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for task in days_dict['Wednesday'] %}
-                                    <div>{{ task.name }}</div>
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for task in days_dict['Thursday'] %}
-                                    <div>{{ task.name }}</div>
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for task in days_dict['Friday'] %}
-                                    <div>{{ task.name }}</div>
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for task in days_dict['Saturday'] %}
-                                    <div>{{ task.name }}</div>
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for task in days_dict['Sunday'] %}
-                                    <div>{{ task.name }}</div>
-                                {% endfor %}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <button class="btn btn-primary" id="changeView">Week View</button>
+            <h2 class="mb-3">Calendar</h2>         
+            <div class="collapse hide" id="Weekly-View">
+                <div class="card card-body">
+                    <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                                <th>Saturday</th>
+                                <th>Sunday</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    {% for task in days_dict['Monday'] %}
+                                        <div>{{ task.name }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for task in days_dict['Tuesday'] %}
+                                        <div>{{ task.name }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for task in days_dict['Wednesday'] %}
+                                        <div>{{ task.name }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for task in days_dict['Thursday'] %}
+                                        <div>{{ task.name }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for task in days_dict['Friday'] %}
+                                        <div>{{ task.name }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for task in days_dict['Saturday'] %}
+                                        <div>{{ task.name }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for task in days_dict['Sunday'] %}
+                                        <div>{{ task.name }}</div>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            
-            
+            <div class="collapse show" id="Monthly-View">
+                <div class="card card-body">
+                    <div class="row">
+                        <div class="col">
+                          <h2 id="monthName"></h2>
+                        </div>
+                      </div>
+                    <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th>Sunday</th>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                                <th>Saturday</th>                                
+                            </tr>
+                        </thead>
+                        <tbody id="month">                           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
     <div class="col">
@@ -255,6 +280,111 @@
         function resetIcon(button) {
             button.getElementsByTagName('i')[0].className = 'bi bi-circle';
         }
+    </script>
+
+    <!--Weekly/Monthly view toggle button-->
+    <script>
+        var togglebutton = document.getElementById("changeView");
+        var weeklyWiew = document.getElementById("Weekly-View");
+        var monthlyView = document.getElementById("Monthly-View");
+
+        var weekly = new bootstrap.Collapse(weeklyWiew)
+        var monthly = new bootstrap.Collapse(monthlyView)
+
+        togglebutton.addEventListener("click", function(event) {
+            if (event.target === togglebutton) {
+                weekly.toggle();
+                monthly.toggle();
+                // Change the button test based on view selected.
+                if(togglebutton.textContent == "Week View") {
+                    togglebutton.textContent = "Month View";
+                }else if(togglebutton.textContent == "Month View"){
+                    togglebutton.textContent = "Week View";
+                }
+            }
+        });
+    </script>
+
+    <!--Create the monthly view-->
+    <script>
+        // Generate the days of the month
+        function getMonth(year, month) {
+            var calMonth = document.getElementById("month");
+            var monthName = document.getElementById("monthName");
+            var daysInMonth = new Date(year, month + 1, 0).getDate();
+            var startOfWeek = new Date(year, month, 1).getDay();
+            var dayIndex = startOfWeek
+            var odd = false
+            var currentDay = 1;
+            var tempMonth = month + 1   
+            var strMonth     
+            var active_data = JSON.parse('{{ active_tasks|tojson|safe }}');
+            console.log(active_data);
+
+            // Clear out the month
+            calMonth.innerHTML = "";
+
+            var months = [
+                "January", "February", "March", "April", "May", "June", "July",
+                "August", "September", "October", "November", "December"];
+
+            monthName.textContent = months[month] + " " + year;
+
+            // format the month value to match the DB date format
+            if(tempMonth < 10){
+                strMonth = "0" + tempMonth.toString()
+            }else{
+                strMonth = tempMonth.toString()
+            }
+
+            // Generate the days of the month
+            for (var i = 0; i < 5; i++) {
+                var row = document.createElement("tr");
+                for(var j = 0; j < 7; j++) {
+                    var cell = document.createElement("td");
+                    var day = document.createElement("tr");
+                    
+                    if(i == 0 && j < startOfWeek) {
+                        cell.textContent = "";                        
+                    }else if(currentDay > daysInMonth) {
+                        cell.textContent = "";
+                    }else {
+                        day.style.position = "relative";
+                        day.style.textAlign = "left";
+                        day.textContent = currentDay;
+                        cell.appendChild(day);                        
+                        cell.style.width = "175px";
+                        cell.style.height = "175px";
+                        // Add the task item to the day if date matches
+                        for(var k = 0; k < active_data.length; k++) {
+                            var item = document.createElement("tr");
+                            var task = active_data[k];
+                            if(task['date'] ==  year.toString() + "-" + strMonth + "-" + currentDay.toString()) {                               
+                                item.textContent = task['name'];
+                                item.textAlign = "center";
+                                if(odd){
+                                    item.style.color = "mediumturquoise";
+                                    odd = false;
+                                }else{
+                                    item.style.color = "coral";
+                                    odd = true;
+                                }
+                                cell.appendChild(item);                                                           
+                            }
+                        }
+                        currentDay++;
+                        dayIndex++;
+                    }
+                    row.appendChild(cell);
+                }
+                calMonth.appendChild(row);
+            }
+        }
+        var today = new Date();
+        var presentYear = today.getFullYear();
+        var presentMonth = today.getMonth();
+        
+        getMonth(presentYear, presentMonth);
     </script>
 
 </body>

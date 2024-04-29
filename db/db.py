@@ -108,7 +108,7 @@ def update_task_dates(raw_tasks, active_tasks, days_dict):
             task_date = datetime.strptime(task['date'], '%Y-%m-%d').date()
             if is_same_week(task_date):
                 day_name = calendar.day_name[task_date.weekday()]
-                task['date'] = day_name  
+                task['date'] = task_date.strftime('%Y-%m-%d')  
                 days_dict[day_name].append(task)  
             else:
                 task['date'] = task_date.strftime('%Y-%m-%d')
