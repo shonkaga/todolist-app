@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired, Optional
 from flask_wtf.csrf import CSRFProtect
 
 # db functions 
-from db import get_tasks, add_task, update_task, get_task, delete_task, init_db, get_completed_tasks, update_task_details, is_same_week, update_task_dates
+from db import get_tasks, add_task, update_task, get_task, delete_task, init_db, get_completed_tasks, update_task_details, is_same_week, update_task_dates, pull_events, push_events, check_creds
 
 
 
