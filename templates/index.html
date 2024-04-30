@@ -13,7 +13,7 @@
     <div class="">
     <div class="col">
         <div class="container mt-5">
-            <button class="btn btn-primary" id="changeView">Week View</button>
+            <button class="btn btn-primary" id="changeView">Show Monthly View</button>
             <h2 class="mb-3">Calendar</h2>         
             <div class="collapse hide" id="Weekly-View">
                 <div class="card card-body">
@@ -296,10 +296,10 @@
                 weekly.toggle();
                 monthly.toggle();
                 // Change the button test based on view selected.
-                if(togglebutton.textContent == "Week View") {
-                    togglebutton.textContent = "Month View";
-                }else if(togglebutton.textContent == "Month View"){
-                    togglebutton.textContent = "Week View";
+                if(togglebutton.textContent == "Show Monthly View") {
+                    togglebutton.textContent = "Show Weekly View";
+                }else if(togglebutton.textContent == "Show Monthly View"){
+                    togglebutton.textContent = "Show Weekly View";
                 }
             }
         });
@@ -330,7 +330,7 @@
 
             monthName.textContent = months[month] + " " + year;
 
-            // format the month value to match the DB date format
+            // Format the month value to match the DB date format
             if(tempMonth < 10){
                 strMonth = "0" + tempMonth.toString()
             }else{
