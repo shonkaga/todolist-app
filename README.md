@@ -1,51 +1,63 @@
-# To Do List  
+# Adding tasks to the database using python
 
-![product image](./static/product_image.png)
+1. Include SQL 
+   
+```
+import sqlite3
+```
 
-## Running on Windows:
-1. open powershell 
+2. Connent to database and create a cursor
+   
+```
+connection = sqlite3.connect('./db/database.db')
+with open('./db/schema.sql') as f:
+      connection.executescript(f.read())
 
-2. Install the python packages 
-    ```shell 
-    cd todolist-app
-    python -m venv venv
-    .\venv\Scripts\Activate.ps1
-    pip install -r requirements.txt
-    ```
+cur = connection.cursor()
+```
 
-    if you get an error when trying to activate then open powershell as an admin and run
-    `Set-ExecutionPolicy Unrestricted -Force`
+3. Use cursor to execute SQL INSERT command
+    - Replace 'Task Name' with the name of the task you wish to add
+    - For status, 0 is incomplete and 1 is complete, always add new tasks with the status 0
+    - Add date in the format 'year-month-day' or None
 
-3. Run the python server 
-    ```shell
-    python server.py
-    ```
+   ### Task  with a specific date:
+```
+cur.execute("INSERT INTO tasks (name, status, due_date) VALUES (?, ?, ?)",
+         ('Task Name', 0, '2024-4-10')
+         )
+```
 
-4. open http://127.0.0.1:5000
+   ### Task without specific date:
+```
+cur.execute("INSERT INTO tasks (name, status, due_date) VALUES (?, ?, ?)",
+         ('Task Name', 0, 'None')
+         )
+```
+   
+5. Close the database when done
 
-5. 
-    ```shell
-    deactivate
-    ```
-    
-## Running on Mac:
-1. open terminal
+```
+connection.commit()
+connection.close()
+```
 
-2. Install the python packages
-   ```shell
-   cd todolist-app
-   python -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-   ```
 
-3. Run the python server
-   ```shell
-   python server.py
-   ```
+# Blank Task Template for implementation
 
-4. open http://127.0.0.1:5000
+```
+import sqlite3
 
-5. ```shell
-   deactivate
-   ```
+connection = sqlite3.connect('./db/database.db')
+with open('./db/schema.sql') as f:
+    connection.executescript(f.read())
+
+cur = connection.cursor()
+
+cur.execute("INSERT INTO tasks (name, status, due_date) VALUES (?, ?, ?)",
+            ('', 0, '')
+            )
+
+connection.commit()
+connection.close()
+```
