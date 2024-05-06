@@ -237,6 +237,13 @@ def update_task_dates(raw_tasks, active_tasks, days_dict):
                 task['date'] = task_date.strftime('%Y-%m-%d')
         active_tasks.append(task)
 
+def get_tomorrow_schedule():
+    db = get_db()
+    next_date = date.today() + timedelta(days=1)
+    next_tasks = db.execute('SELECT * FROM tasks WHERE date = :next_date ORDER BY date DESC', {'next_date': next_date}).fetchall()
+    db.close()
+
+    return next_tasks
 
 if __name__ == "__main__":
     main()
