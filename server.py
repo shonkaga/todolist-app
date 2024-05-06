@@ -11,6 +11,7 @@ from db import get_tasks, add_task, update_task, get_task, delete_task, init_db,
 
 
 
+
 init_db()
 
 app = Flask(__name__)

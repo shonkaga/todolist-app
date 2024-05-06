@@ -13,7 +13,6 @@
     <div class="">
     <div class="col">
         <div class="container mt-5">
-
             <!-- buttons for pulling and pushing google cal -->
 <div class="settings-buttons text-end">
     <form action="{{ url_for('pull') }}" method="post" class="d-inline">
@@ -29,64 +28,103 @@
         </button>
     </form>
 </div>
-
-            <h2 class="mb-3">Calendar</h2>
-            <div class="container">
-                <table class="table table-bordered text-center">
-                    <thead>
-                        <tr>
-                            <th>Monday</th>
-                            <th>Tuesday</th>
-                            <th>Wednesday</th>
-                            <th>Thursday</th>
-                            <th>Friday</th>
-                            <th>Saturday</th>
-                            <th>Sunday</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                {% for task in days_dict['Monday'] %}
-                                    <div>{{ task.name }}</div>
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for task in days_dict['Tuesday'] %}
-                                    <div>{{ task.name }}</div>
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for task in days_dict['Wednesday'] %}
-                                    <div>{{ task.name }}</div>
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for task in days_dict['Thursday'] %}
-                                    <div>{{ task.name }}</div>
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for task in days_dict['Friday'] %}
-                                    <div>{{ task.name }}</div>
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for task in days_dict['Saturday'] %}
-                                    <div>{{ task.name }}</div>
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for task in days_dict['Sunday'] %}
-                                    <div>{{ task.name }}</div>
-                                {% endfor %}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <button class="btn btn-primary" id="changeView">Show Monthly View</button>            
+            <h2 class="mb-3">Calendar</h2>                  
+            <div class="collapse hide" id="Weekly-View">
+                <div class="card card-body">
+                    <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                                <th>Saturday</th>
+                                <th>Sunday</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    {% for task in days_dict['Monday'] %}
+                                        <div>{{ task.name }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for task in days_dict['Tuesday'] %}
+                                        <div>{{ task.name }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for task in days_dict['Wednesday'] %}
+                                        <div>{{ task.name }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for task in days_dict['Thursday'] %}
+                                        <div>{{ task.name }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for task in days_dict['Friday'] %}
+                                        <div>{{ task.name }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for task in days_dict['Saturday'] %}
+                                        <div>{{ task.name }}</div>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for task in days_dict['Sunday'] %}
+                                        <div>{{ task.name }}</div>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            
-            
+            <div class="collapse show" id="Monthly-View">
+                <div class="card card-body">
+                    <div class="row">
+                        <div class="col">
+                            <button class="btn btn-info" id="priorMonth"></button>
+                            <button class="btn btn-info" id="nextMonth"></button> 
+                            <button class="btn btn-info" id="Jan">January</button>                        
+                            <button class="btn btn-info" id="Feb">February</button> 
+                            <button class="btn btn-info" id="Mar">March</button>
+                            <button class="btn btn-info" id="Apr">April</button>
+                            <button class="btn btn-info" id="May">May</button>
+                            <button class="btn btn-info" id="Jun">June</button>
+                            <button class="btn btn-info" id="Jul">July</button>
+                            <button class="btn btn-info" id="Aug">August</button>
+                            <button class="btn btn-info" id="Sep">September</button>
+                            <button class="btn btn-info" id="Oct">October</button>
+                            <button class="btn btn-info" id="Nov">November</button>
+                            <button class="btn btn-info" id="Dec">December</button>
+                            <h2 id="monthName"></h2>
+                        </div>
+                      </div>
+                    <table class="table table-bordered text-center">
+                        <thead>
+                            <tr>
+                                <th>Sunday</th>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                                <th>Saturday</th>                                
+                            </tr>
+                        </thead>
+                        <tbody id="month">                           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
     <div class="col">
@@ -273,6 +311,388 @@
             button.getElementsByTagName('i')[0].className = 'bi bi-circle';
         }
     </script>
+
+    <!--Weekly/Monthly view toggle button-->
+    <script>
+        var togglebutton = document.getElementById("changeView");
+        var weeklyWiew = document.getElementById("Weekly-View");
+        var monthlyView = document.getElementById("Monthly-View");
+
+        var weekly = new bootstrap.Collapse(weeklyWiew)
+        var monthly = new bootstrap.Collapse(monthlyView)
+
+        togglebutton.addEventListener("click", function(event) {
+            if (event.target === togglebutton) {
+                weekly.toggle();
+                monthly.toggle();
+                // Change the button test based on view selected.
+                if(togglebutton.textContent == "Show Monthly View") {
+                    togglebutton.textContent = "Show Weekly View";
+                }else if(togglebutton.textContent == "Show Monthly View"){
+                    togglebutton.textContent = "Show Weekly View";
+                }
+            }
+        });
+    </script>
+
+    <!--Create the monthly view-->
+    <script>
+        // Generate the days of the month
+        function getMonth(year, month) {
+            var calMonth = document.getElementById("month");
+            var monthName = document.getElementById("monthName");
+            var daysInMonth = new Date(year, month + 1, 0).getDate();
+            var priorMonthDays = new Date(year, month, 0).getDate();
+            var startOfWeek = new Date(year, month, 1).getDay();
+            var odd = true;
+            var nextMonthDay = 1;
+            var currentDay = 1;
+            var strDay;
+            var tempMonth = month + 1   
+            var strMonth;   
+            var active_data = JSON.parse('{{ active_tasks|tojson|safe }}');
+            console.log(active_data);
+
+            // Clear out the month
+            calMonth.innerHTML = "";
+
+            const months = [
+                "January", "February", "March", "April", "May", "June", "July",
+                "August", "September", "October", "November", "December"];
+
+            monthName.textContent = months[month] + " " + year;
+
+            // Format the month value to match the DB date format
+            if(tempMonth < 10){
+                strMonth = "0" + tempMonth.toString();
+            }else{
+                strMonth = tempMonth.toString();
+            }            
+
+            // Generate the days of the month
+            for (var i = 0; i < 6; i++) {
+                var row = document.createElement("tr");
+                for(var j = 0; j < 7; j++) {
+                    var cell = document.createElement("td");
+                    var day = document.createElement("tr");
+                    
+                    // Format the day to match the DB
+                    if(currentDay < 10){
+                            strDay = "0"  + currentDay.toString();
+                    }else{
+                        strDay = currentDay.toString();
+                    }
+
+                    if(i == 0 && j < startOfWeek) {
+                        day.style.position = "relative";
+                        day.style.textAlign = "left";
+                        day.style.color = "mediumvioletred";
+                        day.textContent = priorMonthDays - (startOfWeek - j - 1);
+                        cell.appendChild(day);                        
+                        cell.style.width = "175px";
+                        cell.style.height = "175px";                      
+                    }else if(currentDay > daysInMonth) {
+                        day.style.position = "relative";
+                        day.style.textAlign = "left";
+                        day.style.color = "mediumvioletred";
+                        day.textContent = nextMonthDay++;
+                        cell.appendChild(day);                        
+                        cell.style.width = "175px";
+                        cell.style.height = "175px";
+                    }else {
+                        day.style.position = "relative";
+                        day.style.textAlign = "left";
+                        day.textContent = currentDay;
+                        cell.appendChild(day);                        
+                        cell.style.width = "175px";
+                        cell.style.height = "175px";
+
+                        // Add the task item to the day if date matches
+                        for(var k = 0; k < active_data.length; k++) {
+                            var item = document.createElement("tr");                            
+                            var task = active_data[k];
+                            if(task['date'] ==  year.toString() + "-" + strMonth + "-" + strDay) {                               
+                                item.textContent = task['name'];
+                                item.textAlign = "center";
+                                if(odd){
+                                    item.style.color = "mediumturquoise";
+                                    odd = false;
+                                }else{
+                                    item.style.color = "coral";
+                                    odd = true;
+                                }
+                                cell.appendChild(item);                                                           
+                            }
+                        }
+                        currentDay++;
+                        
+                    }
+                    row.appendChild(cell);
+                }
+                calMonth.appendChild(row);
+            }
+        }
+        var today = new Date();
+        var presentYear = today.getFullYear();
+        var presentMonth = today.getMonth();
+        
+        getMonth(presentYear, presentMonth);
+    </script>
+
+     <!--Prior month, next month, and individual month toggle buttons-->
+     <script>
+        const monthMap = new Map([
+                    ["January",0], ["February",1], ["March",2], ["April",3], ["May",4], ["June",5], ["July",6],
+                    ["August",7], ["September",8], ["October",9], ["November",10], ["December",11]]);
+            
+        const monthList = ["January", "February", "March", "April", "May", "June", "July",
+                    "August", "September", "October", "November", "December"];
+
+        var priorButton = document.getElementById("priorMonth");
+        var nextButton = document.getElementById("nextMonth");
+        var currentMonth = document.getElementById("monthName");
+        var monthYear = currentMonth.textContent.split(" ");
+        var yearToGet = Number(monthYear[1]);
+        var nextMonth;
+        var priorMonth;
+        // Set the next month variables for default load.
+        if(monthMap.get(monthYear[0]) == 11){
+            nextMonth = 0;
+            priorMonth = 10;
+        }else if(monthMap.get(monthYear[0]) == 0){
+            nextMonth = 1;
+            priorMonth = 11;
+        }else{
+            nextMonth = monthMap.get(monthYear[0]) + 1;
+            priorMonth = monthMap.get(monthYear[0]) - 1;
+        }
+
+        nextButton.textContent = monthList[nextMonth];
+        priorButton.textContent = monthList[priorMonth];
+
+        // Set the variables for instances when the prior month is selected.
+        priorButton.addEventListener("click", function(event) {          
+            if (event.target === priorButton) {
+                if(monthMap.get(monthYear[0]) == 0 && yearToGet == Number(monthYear[1])){
+                    yearToGet -= 1;
+                }
+                getMonth(yearToGet, priorMonth);
+            }
+            currentMonth = document.getElementById("monthName");
+            monthYear = currentMonth.textContent.split(" ");
+            yearToGet = Number(monthYear[1]);
+            if(monthMap.get(monthYear[0]) == 11){
+                nextMonth = 0;
+                priorMonth = 10;
+            }else if(monthMap.get(monthYear[0]) == 0){
+                nextMonth = 1;
+                priorMonth = 11;
+            }else{
+                nextMonth = monthMap.get(monthYear[0]) + 1;
+                priorMonth = monthMap.get(monthYear[0]) - 1;
+            }
+
+            nextButton.textContent = monthList[nextMonth];
+            priorButton.textContent = monthList[priorMonth];
+        });
+
+        // Set the variables for the instances when the next month is selected.
+        nextButton.addEventListener("click", function(event) {          
+            if (event.target === nextButton) {
+                if(monthMap.get(monthYear[0]) == 11 && yearToGet == Number(monthYear[1])){
+                    yearToGet += 1;
+                }
+                getMonth(yearToGet, nextMonth);
+            }
+            currentMonth = document.getElementById("monthName");
+            monthYear = currentMonth.textContent.split(" ");
+            yearToGet = Number(monthYear[1]);
+            if(monthMap.get(monthYear[0]) == 11){
+                nextMonth = 0;
+                priorMonth = 10;
+            }else if(monthMap.get(monthYear[0]) == 0){
+                nextMonth = 1;
+                priorMonth = 11;
+                
+            }else{
+                nextMonth = monthMap.get(monthYear[0]) + 1;
+                priorMonth = monthMap.get(monthYear[0]) - 1;
+            }
+
+            nextButton.textContent = monthList[nextMonth];
+            priorButton.textContent = monthList[priorMonth];
+        });
+
+        // Set the individual month buttons.
+        var JanButton = document.getElementById("Jan");
+        var FebButton = document.getElementById("Feb");
+        var MarButton = document.getElementById("Mar");
+        var AprButton = document.getElementById("Apr");
+        var MayButton = document.getElementById("May");
+        var JunButton = document.getElementById("Jun");
+        var JulButton = document.getElementById("Jul");
+        var AugButton = document.getElementById("Aug");
+        var SepButton = document.getElementById("Sep");
+        var OctButton = document.getElementById("Oct");
+        var NovButton = document.getElementById("Nov");
+        var DecButton = document.getElementById("Dec");
+
+        JanButton.addEventListener("click", function(event) {
+            if(event.target === JanButton) {
+                getMonth(yearToGet, 0);
+            }
+            currentMonth = document.getElementById("monthName");
+            monthYear = currentMonth.textContent.split(" ");
+            yearToGet = Number(monthYear[1]);
+            nextMonth = 1;
+            priorMonth = 11;
+            nextButton.textContent = monthList[nextMonth];
+            priorButton.textContent = monthList[priorMonth];
+        });
+
+        FebButton.addEventListener("click", function(event){
+            if(event.target === FebButton) {
+                getMonth(yearToGet, 1);
+            }
+            currentMonth = document.getElementById("monthName");
+            monthYear = currentMonth.textContent.split(" ");
+            yearToGet = Number(monthYear[1]);
+            nextMonth = 2;
+            priorMonth = 0;
+            nextButton.textContent = monthList[nextMonth];
+            priorButton.textContent = monthList[priorMonth];
+        });
+
+        MarButton.addEventListener("click", function(event){
+            if(event.target === MarButton) {
+                getMonth(yearToGet, 2);
+            }
+            currentMonth = document.getElementById("monthName");
+            monthYear = currentMonth.textContent.split(" ");
+            yearToGet = Number(monthYear[1]);
+            nextMonth = 3;
+            priorMonth = 1;
+            nextButton.textContent = monthList[nextMonth];
+            priorButton.textContent = monthList[priorMonth];
+        });
+
+        AprButton.addEventListener("click", function(event){
+            if(event.target === AprButton) {
+                getMonth(yearToGet, 3);
+            }
+            currentMonth = document.getElementById("monthName");
+            monthYear = currentMonth.textContent.split(" ");
+            yearToGet = Number(monthYear[1]);
+            nextMonth = 4;
+            priorMonth = 2;
+            nextButton.textContent = monthList[nextMonth];
+            priorButton.textContent = monthList[priorMonth];
+        });
+
+        MayButton.addEventListener("click", function(event){
+            if(event.target === MayButton) {
+                getMonth(yearToGet, 4);
+            }
+            currentMonth = document.getElementById("monthName");
+            monthYear = currentMonth.textContent.split(" ");
+            yearToGet = Number(monthYear[1]);
+            nextMonth = 5;
+            priorMonth = 3;
+            nextButton.textContent = monthList[nextMonth];
+            priorButton.textContent = monthList[priorMonth];
+        });
+
+        JunButton.addEventListener("click", function(event){
+            if(event.target === JunButton) {
+                getMonth(yearToGet, 5);
+            }
+            currentMonth = document.getElementById("monthName");
+            monthYear = currentMonth.textContent.split(" ");
+            yearToGet = Number(monthYear[1]);
+            nextMonth = 6;
+            priorMonth = 4;
+            nextButton.textContent = monthList[nextMonth];
+            priorButton.textContent = monthList[priorMonth];
+        });
+
+        JulButton.addEventListener("click", function(event){
+            if(event.target === JulButton) {
+                getMonth(yearToGet, 6);
+            }
+            currentMonth = document.getElementById("monthName");
+            monthYear = currentMonth.textContent.split(" ");
+            yearToGet = Number(monthYear[1]);
+            nextMonth = 7;
+            priorMonth = 5;
+            nextButton.textContent = monthList[nextMonth];
+            priorButton.textContent = monthList[priorMonth];
+        });
+
+        AugButton.addEventListener("click", function(event){
+            if(event.target === AugButton) {
+                getMonth(yearToGet, 7);
+            }
+            currentMonth = document.getElementById("monthName");
+            monthYear = currentMonth.textContent.split(" ");
+            yearToGet = Number(monthYear[1]);
+            nextMonth = 8;
+            priorMonth = 6;
+            nextButton.textContent = monthList[nextMonth];
+            priorButton.textContent = monthList[priorMonth];
+        });
+
+        SepButton.addEventListener("click", function(event){
+            if(event.target === SepButton) {
+                getMonth(yearToGet, 8);
+            }
+            currentMonth = document.getElementById("monthName");
+            monthYear = currentMonth.textContent.split(" ");
+            yearToGet = Number(monthYear[1]);
+            nextMonth = 9;
+            priorMonth = 7;
+            nextButton.textContent = monthList[nextMonth];
+            priorButton.textContent = monthList[priorMonth];
+        });
+
+        OctButton.addEventListener("click", function(event){
+            if(event.target === OctButton) {
+                getMonth(yearToGet, 9);
+            }
+            currentMonth = document.getElementById("monthName");
+            monthYear = currentMonth.textContent.split(" ");
+            yearToGet = Number(monthYear[1]);
+            nextMonth = 10;
+            priorMonth = 8;
+            nextButton.textContent = monthList[nextMonth];
+            priorButton.textContent = monthList[priorMonth];
+        });
+
+        NovButton.addEventListener("click", function(event){
+            if(event.target === NovButton) {
+                getMonth(yearToGet, 10);
+            }
+            currentMonth = document.getElementById("monthName");
+            monthYear = currentMonth.textContent.split(" ");
+            yearToGet = Number(monthYear[1]);
+            nextMonth = 11;
+            priorMonth = 9;
+            nextButton.textContent = monthList[nextMonth];
+            priorButton.textContent = monthList[priorMonth];
+        });
+
+        DecButton.addEventListener("click", function(event){
+            if(event.target === DecButton) {
+                getMonth(yearToGet, 11);
+            }
+            currentMonth = document.getElementById("monthName");
+            monthYear = currentMonth.textContent.split(" ");
+            yearToGet = Number(monthYear[1]);
+            nextMonth = 0;
+            priorMonth = 10;
+            nextButton.textContent = monthList[nextMonth];
+            priorButton.textContent = monthList[priorMonth];
+        });
+    </Script>
 
 </body>
 

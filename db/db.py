@@ -4,6 +4,7 @@ import os
 from datetime import datetime, timedelta
 import calendar
 
+
 # Google
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -125,7 +126,6 @@ def push_events():
         print(f"An error occurred: {error}")
 
     db.close()
-
 
 def init_db():
 
