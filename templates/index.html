@@ -13,22 +13,51 @@
     <div class="">
     <div class="col">
         <div class="container mt-5">
-            <!-- buttons for pulling and pushing google cal -->
-<div class="settings-buttons text-end">
+           
+            <!-- Settings for google callender and notifications -->
+            <button class="btn btn-light bi bi-gear float-end" data-bs-toggle="modal" data-bs-target="#settings"> </button>
+
+
+            <!--Display tomorrows to do list items-->
+            <div class="modal fade " id="settings"  role="dialog">
+                <div class="modal-dialog" role="document">
+                    
+                  <div class="modal-content">
+                    <div class="text-end">
+                    <button id="close-schedule " type="button" class="btn btn-danger  bi bi-x-circle close-button float-end" data-bs-dismiss="modal"></button>
+                </div>
+                    <!-- modal body with buttons-->
+                   
+                   <br>        
+<div class="settings-buttons text-center">
     <form action="{{ url_for('pull') }}" method="post" class="d-inline">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="btn btn-primary">
-            <i class="bi bi-calendar-date"></i> Pull Events
+        <button type="submit" class="btn btn-primary setting-button">
+            <i class="bi bi-calendar-date"></i> Pull Google Calander Events
         </button>
     </form>
+    <br><br>
     <form action="{{ url_for('push') }}" method="post" class="d-inline">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="btn btn-secondary">
-            <i class="bi bi-calendar-date"></i> Push Events
+        <button type="submit" class="btn btn-primary setting-button">
+            <i class="bi bi-calendar-date"></i> Push Google Calander Events
         </button>
     </form>
+    <br><br>
+    <button class="btn btn-warning bi bi-bell setting-button" data-bs-toggle="modal" data-bs-target="#scheduleTime"> <span class="ps-1">Notifications</span></button>
+    <br><br>
 </div>
-            <button class="btn btn-primary" id="changeView">Show Monthly View</button>            
+                   
+                        
+
+                  </div>
+                </div>
+            </div>
+        
+
+
+            <button class="btn btn-primary" id="changeView">Show Monthly View</button>    
+            
             <h2 class="mb-3">Calendar</h2>                  
             <div class="collapse hide" id="Weekly-View">
                 <div class="card card-body">
@@ -130,13 +159,13 @@
     <div class="col">
         <div class=" container">
             <div class="container">
-                <h1>Tasks</h1>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add Task</button>
-                <button class="btn btn-primary bi-calendar-check" data-bs-toggle="modal" data-bs-target="#nextSchedule"></button>
-                <button class="btn btn-success bi-clock" data-bs-toggle="modal" data-bs-target="#scheduleTime"></button>
+                <h1 class="mt-3">Tasks</h1>
+                <button class="btn btn-success bi bi-calendar2-plus" data-bs-toggle="modal" data-bs-target="#addTaskModal"> <span class="ps-1">Add Tasks</span></button>
+                <button class="btn btn-secondary bi bi-calendar-day" data-bs-toggle="modal" data-bs-target="#nextSchedule">  <span class="ps-1">Tomorrow's Tasks</span></button>
+              
 
                 <!--Display tomorrows to do list items-->
-                <div class="modal fade" id="nextSchedule"  role="dialog">
+                <div class="modal fade " id="nextSchedule"  role="dialog">
                     <div class="modal-dialog" role="document">
                       <div class="modal-content">
                         <div class="modal-header">
@@ -174,7 +203,7 @@
                         </div>
                       </div>
                 </div>
-                <ul class="list-group mb-3">
+                <ul class="list-group mb-3 mt-3">
                     {% for task in active_tasks %}
                     <li class="list-group-item">
                         <div class="container">
@@ -401,8 +430,8 @@
                 weekly.toggle();
                 monthly.toggle();
                 // Change the button test based on view selected.
-                if(togglebutton.textContent == "Show Monthly View") {
-                    togglebutton.textContent = "Show Weekly View";
+                if(togglebutton.textContent == "Show Weekly View") {
+                    togglebutton.textContent = "Show Monthly View";
                 }else if(togglebutton.textContent == "Show Monthly View"){
                     togglebutton.textContent = "Show Weekly View";
                 }

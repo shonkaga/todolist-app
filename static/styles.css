@@ -6,3 +6,11 @@
 .dd{
     background-color: #002D9B ;
 }
+
+.setting-button{
+    width:300px ;
+}
+
+.close-button{
+    max-width:50px;
+}
