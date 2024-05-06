@@ -13,6 +13,21 @@
     <div class="">
     <div class="col">
         <div class="container mt-5">
+            <!-- buttons for pulling and pushing google cal -->
+<div class="settings-buttons text-end">
+    <form action="{{ url_for('pull') }}" method="post" class="d-inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-calendar-date"></i> Pull Events
+        </button>
+    </form>
+    <form action="{{ url_for('push') }}" method="post" class="d-inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-secondary">
+            <i class="bi bi-calendar-date"></i> Push Events
+        </button>
+    </form>
+</div>
             <button class="btn btn-primary" id="changeView">Show Monthly View</button>            
             <h2 class="mb-3">Calendar</h2>                  
             <div class="collapse hide" id="Weekly-View">
@@ -109,6 +124,7 @@
                     </table>
                 </div>
             </div>
+
         </div>
     </div>
     <div class="col">

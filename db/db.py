@@ -4,6 +4,129 @@ import os
 from datetime import datetime, timedelta
 import calendar
 
+
+# Google
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+
+SCOPES = SCOPES = ["https://www.googleapis.com/auth/calendar", "https://www.googleapis.com/auth/tasks"]
+creds = None
+
+def check_creds():
+    global creds
+
+    if os.path.exists("token.json"):
+        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                "./db/credentials.json", SCOPES
+            )
+            creds = flow.run_local_server(port=0)
+
+        with open("token.json", "w") as token:
+            token.write(creds.to_json())
+
+
+def pull_events():
+    # Check google credentials
+    check_creds()
+
+    try:
+        # Connect goople api
+        service = build("calendar", "v3", credentials=creds)
+        # Only pull current events
+        now = datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
+
+        events_result = (
+            service.events().list(
+                calendarId="primary",
+                timeMin=now,
+                singleEvents=True,
+                orderBy="startTime",
+            ).execute()
+        )
+        events = events_result.get("items", [])
+        # If empty
+        if not events:
+            return
+
+        # Connect to db
+        db = get_db()
+        cursor = db.cursor()
+
+        # Add events to db
+        for event in events:
+            event_name = event.get("summary")
+            event_date = event["start"].get("dateTime")
+            if event_date:
+                event_date = datetime.fromisoformat(event_date)
+            else:
+                event_date = datetime.fromisoformat(event["start"].get("date"))
+            event_date_str = event_date.strftime('%Y-%m-%d')
+
+            cursor.execute("SELECT * FROM tasks WHERE name=? AND date=?", (event_name, event_date_str))
+            existing_event = cursor.fetchone()
+
+            if not existing_event:
+                cursor.execute("INSERT INTO tasks (name, status, date) VALUES (?, ?, ?)",
+                               (event_name, 0, event_date_str))
+
+        db.commit()
+        db.close()
+
+    # Handle google API error
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+
+
+def push_events():
+    # Check google credentials
+    check_creds()
+    # Connect to google api
+    service = build("calendar", "v3", credentials=creds)
+    # Connect to db
+    db = get_db()
+    cursor = db.cursor()
+
+    try:
+        # Pull tasks from db
+        cursor.execute("SELECT * FROM tasks")
+        tasks = cursor.fetchall()
+
+        for task in tasks:
+            event_name = task['name']
+            event_date = task['date']
+
+            # Check if task in calendar
+            events_result = service.events().list(
+                calendarId="primary",
+                q=event_name,
+                singleEvents=True,
+                orderBy="startTime",
+            ).execute()
+            events = events_result.get("items", [])
+
+            # Add task to calendar
+            if not events:
+                event = {
+                    'summary': event_name,
+                    'start': {'date': event_date},
+                    'end': {'date': event_date}
+                }
+                service.events().insert(calendarId='primary', body=event).execute()
+    # Handle API error
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+
+    db.close()
+
 def init_db():
 
     # if db exists connect 

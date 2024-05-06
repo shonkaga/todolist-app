@@ -11,6 +11,8 @@ venv/
 # ignore the database since we generate it on init 
 /db/database.db
 database.db
+credentials.json
+token.json
 
 ./db/__pycache__
 #don't store mac file attribute
