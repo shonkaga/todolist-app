@@ -10,9 +10,14 @@ venv/
 
 # ignore the database since we generate it on init 
 /db/database.db
-.\db\database.d
 database.db
+credentials.json
+token.json
 
+./db/__pycache__
 #don't store mac file attribute
 *DS_Store
+
+
+
 
