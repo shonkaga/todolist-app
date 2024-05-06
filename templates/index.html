@@ -129,11 +129,51 @@
     </div>
     <div class="col">
         <div class=" container">
-
-
             <div class="container">
                 <h1>Tasks</h1>
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add Task</button>
+                <button class="btn btn-primary bi-calendar-check" data-bs-toggle="modal" data-bs-target="#nextSchedule"></button>
+                <button class="btn btn-success bi-clock" data-bs-toggle="modal" data-bs-target="#scheduleTime"></button>
+
+                <!--Display tomorrows to do list items-->
+                <div class="modal fade" id="nextSchedule"  role="dialog">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Tomorrows Tasks</h5>
+                        </div>
+                        {% for task in next_tasks %}
+                        <div class="modal-body">
+                            {{ task.name }}
+                            {% if task.date %}
+                                <span class="ms-3 text-secondary fs-6">{{ task.date }}</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        <div class="modal-footer">
+                            <button id="close-schedule" type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+
+                <!--Choose time to get next days schedule notification-->
+                <div class="modal fade" id="scheduleTime"  role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Select Time to Recieve Tomorrows Tasks</h5>
+                          </div>
+                          <div class="modal-body">
+                              <input type="time" value="00:00:00" step="1" id="theSelectedTime">
+                          </div>
+                          <div class="modal-footer">
+                            <button type="submit" class="btn btn-success" onClick="setTheTime()" data-bs-dismiss="modal">Confirm</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                </div>
                 <ul class="list-group mb-3">
                     {% for task in active_tasks %}
                     <li class="list-group-item">
@@ -302,6 +342,41 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+
+    <!--Set the time to get the notification for tomorrows schedule. Includes a notification chime using Web Audio API-->
+    <audio  id="myChime" src="../static/chime.mp3" type="audio/mpeg"></audio>
+    <script>
+        var theTime;
+        
+        if(localStorage.getItem('chosenTime') != null) {
+            theTime = window.localStorage.getItem('chosenTime');
+            $('#theSelectedTime').val(theTime);
+        }
+
+        function setTheTime() {
+            theTime = document.getElementById('theSelectedTime').value;
+            localStorage.setItem('chosenTime', theTime);
+            $('#theSelectedTime').val(theTime);
+        }
+
+        setInterval(function () {
+            var currDate = new Date();
+            var currHours = currDate.getHours().toString().padStart(2, '0');
+            var currMinutes = currDate.getMinutes().toString().padStart(2, '0');
+            var currSeconds = currDate.getSeconds().toString().padStart(2, '0');
+            var currTime = currHours + ":" + currMinutes + ":" + currSeconds;
+            
+            if(theTime == currTime) {
+                $('#nextSchedule').modal('show');
+                chime();
+            }
+        });
+
+        function chime() {
+            const audio = document.getElementById("myChime");
+            audio.play();
+        }
+    </script>
 
     <script>
         function changeIcon(button) {

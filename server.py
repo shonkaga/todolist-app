@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired, Optional
 from flask_wtf.csrf import CSRFProtect
 
 # db functions 
-from db import get_tasks, add_task, update_task, get_task, delete_task, init_db, get_completed_tasks, update_task_details, is_same_week, update_task_dates, pull_events, push_events, check_creds
+from db import get_tasks, add_task, update_task, get_task, delete_task, init_db, get_completed_tasks, update_task_details, is_same_week, update_task_dates, pull_events, push_events, check_creds, get_tomorrow_schedule
 
 
 
@@ -35,9 +35,10 @@ def index():
     active_tasks = []
     days_dict = {}
     update_task_dates(raw_tasks,active_tasks,days_dict)
+    next_tasks = get_tomorrow_schedule()
     
     completed_tasks = get_completed_tasks()  
-    return render_template('index.html', active_tasks=active_tasks, completed_tasks=completed_tasks, form=form, days_dict=days_dict)
+    return render_template('index.html', active_tasks=active_tasks, completed_tasks=completed_tasks, form=form, days_dict=days_dict, next_tasks=next_tasks)
 
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
