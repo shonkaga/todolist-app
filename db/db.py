@@ -70,13 +70,14 @@ def pull_events():
             else:
                 event_date = datetime.fromisoformat(event["start"].get("date"))
             event_date_str = event_date.strftime('%Y-%m-%d')
+            google_event_id = event['id']
 
-            cursor.execute("SELECT * FROM tasks WHERE name=? AND date=?", (event_name, event_date_str))
+            cursor.execute("SELECT * FROM tasks WHERE google_event_id=?", (google_event_id,))
             existing_event = cursor.fetchone()
 
             if not existing_event:
-                cursor.execute("INSERT INTO tasks (name, status, date) VALUES (?, ?, ?)",
-                               (event_name, 0, event_date_str))
+                cursor.execute("INSERT INTO tasks (name, status, date, google_event_id) VALUES (?, ?, ?, ?)",
+                               (event_name, 0, event_date_str, google_event_id))
 
         db.commit()
         db.close()
@@ -103,24 +104,30 @@ def push_events():
         for task in tasks:
             event_name = task['name']
             event_date = task['date']
+            google_event_id = task['google_event_id']
 
-            # Check if task in calendar
-            events_result = service.events().list(
-                calendarId="primary",
-                q=event_name,
-                singleEvents=True,
-                orderBy="startTime",
-            ).execute()
-            events = events_result.get("items", [])
+            # if there is an ID update
+            if google_event_id:
+                try:
+                    event = service.events().get(calendarId='primary', eventId=google_event_id).execute()
+                    event['summary'] = event_name
+                    event['start'] = {'date': event_date}
+                    event['end'] = {'date': event_date}
+                    service.events().update(calendarId='primary', eventId=google_event_id, body=event).execute()
+                except HttpError as error:  # If event does not exist
+                    print(f"An error occurred: {error}")
 
             # Add task to calendar
-            if not events:
+            else:
                 event = {
                     'summary': event_name,
                     'start': {'date': event_date},
                     'end': {'date': event_date}
                 }
-                service.events().insert(calendarId='primary', body=event).execute()
+                created_event = service.events().insert(calendarId='primary', body=event).execute()
+                google_event_id = created_event['id']
+                cursor.execute("UPDATE tasks SET google_event_id=? WHERE id=?", (google_event_id, task['id']))
+        db.commit()
     # Handle API error
     except HttpError as error:
         print(f"An error occurred: {error}")
@@ -154,14 +161,14 @@ def populate_db():
 
     # Insert tasks
     tasks = [
-        ('Physics HW', 0, today),
-        ('Clean bathroom', 0, today),
-        ('Cook dinner', 0, today),
-        ('Algorithm HW', 0, tomorrow),
-        ('Interview', 0, tomorrow),
-        ('Laundry', 0, day_after_tomorrow)
+        ('Physics HW', 0, today,None),
+        ('Clean bathroom', 0, today,None),
+        ('Cook dinner', 0, today,None),
+        ('Algorithm HW', 0, tomorrow,None),
+        ('Interview', 0, tomorrow,None),
+        ('Laundry', 0, day_after_tomorrow,None)
     ]
-    cur.executemany("INSERT INTO tasks (name, status, date) VALUES (?, ?, ?)", [(t[0], t[1], t[2].strftime('%Y-%m-%d')) for t in tasks])
+    cur.executemany("INSERT INTO tasks (name, status, date, google_event_id) VALUES (?, ?, ?, ?)", [(t[0], t[1], t[2].strftime('%Y-%m-%d'), t[3]) for t in tasks])
 
     connection.commit()
     connection.close()
@@ -175,9 +182,9 @@ def get_db():
     connection.row_factory = sqlite3.Row
     return connection
 
-def add_task(name, status, date=None):
+def add_task(name, status, date=None, google_event_id=None):
     db = get_db()
-    db.execute('INSERT INTO tasks (name, status, date) VALUES (?, ?, ?)', (name, status, date))
+    db.execute('INSERT INTO tasks (name, status, date, google_event_id) VALUES (?, ?, ?, ?)', (name, status, date, google_event_id))
     db.commit()
     db.close()
 
