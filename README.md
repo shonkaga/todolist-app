@@ -59,8 +59,8 @@
    
 4. Authorize credentials for desktop application
    
-5. Add credentials.json file to the db directory
+5. Download credentials.json file to the Google cloud project and add it to the db directory
 
 Resources:  
 Creating a google cloud project: https://developers.google.com/workspace/guides/create-project  
-Configuring project: https://developers.google.com/tasks/quickstart/python
+Configuring project/API: https://developers.google.com/tasks/quickstart/python
