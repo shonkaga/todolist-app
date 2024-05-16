@@ -49,3 +49,18 @@
 5. ```shell
    deactivate
    ```
+
+## Activating Google API
+1. Create a Google cloud project: 
+
+2. Enable Google Calendar API
+
+3. Configure OAuth Consent screen
+   
+4. Authorize credentials for desktop application
+   
+5. Add credentials.json file to the db directory
+
+Resources:
+Creating a google cloud project: https://developers.google.com/workspace/guides/create-project
+Configuring project: https://developers.google.com/tasks/quickstart/python
